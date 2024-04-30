@@ -226,6 +226,7 @@ void mostrarUnaSolaLista(Nodo *lista)
 
 void agregarTareaCompletada(Nodo **listaPend, Nodo **listaComp, int id)
 {
+    // quiza tendrias que pensar esto con malloc
     Nodo **listaPendCopia = listaPend;                  // algo que no te diste cuenta ** = nombre apuntado por el segundo
     while (*listaPendCopia != NULL && (*listaPendCopia)->datos.tareaID != id)
     {
