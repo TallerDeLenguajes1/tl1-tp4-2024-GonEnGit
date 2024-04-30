@@ -129,6 +129,8 @@ int main(int argv, char *argc[])
         } while (continuar != 'S' && continuar != 'N');
     }
 
+    /* supongo que cuando termines en este caso tendrias que borrar ambas listas */
+
     printf("\nHasta la proxima!\n");
     return 0;
 }
