@@ -28,7 +28,7 @@ Nodo *quitarNodo(Nodo **Cabeza);
 void agregarTareaPendiente(Nodo **Cabeza, int id);     // esto es insertarNodo, puntero doble a la lista y simple al nodo
 void mostrarUnaSolaLista(Nodo *lista);
 void agregarTareaCompletada(Nodo **listaPend, Nodo **listaComp, int id);
-Nodo buscarTareaPorID(Nodo **lista, int idABuscar);
+Nodo buscarTareaPorID(Nodo **listaPend, Nodo **listaComp, int idABuscar);
 Nodo buscarTareaPorPalabra();
 
 
@@ -37,7 +37,7 @@ int main(int argv, char *argc[])
 {
     /* Variables */
     int auxID = 999, opcion, completadoID;
-    char continuar = 'S', otraTareaNueva = 'N', completarOtraTarea = 'S';
+    char continuar = 'S', otraTareaNueva = 'N', completarOtraTarea = 'S', opcionBusqueda;
 
     // creas la lista de tareas pendientes, 'St' por Start
     Nodo *StPendientes;
@@ -68,7 +68,7 @@ int main(int argv, char *argc[])
 
                 } while (otraTareaNueva == 'S');
 
-            break;
+                break;
 
             case 2:         // opcion para pasar una tarea a la lista de completadas
 
@@ -90,7 +90,7 @@ int main(int argv, char *argc[])
                     } while (completarOtraTarea != 'N' && completarOtraTarea != 'S');
                 } while (completarOtraTarea == 'S');
 
-            break;
+                break;
 
             case 3:         // opcion para mostrar las listas
 
@@ -112,11 +112,27 @@ int main(int argv, char *argc[])
                     mostrarUnaSolaLista(StCompletadas);
                 }
 
-            break;
+                break;
 
             case 4:         // opcion para buscar una tarea
 
-            break;
+                do
+                {
+                    printf("Quiere buscar por ID o por palabra? (I/P)");
+                    fflush(stdin);
+                    scanf("%c", &opcionBusqueda);
+                } while (opcionBusqueda != 'I' && opcionBusqueda != 'P');
+
+                if (opcionBusqueda == 'I')
+                {
+                    /* code */
+                }
+                else
+                {
+                    /* code */
+                }
+
+                break;
 
         }
 
@@ -232,11 +248,45 @@ void agregarTareaCompletada(Nodo **listaPend, Nodo **listaComp, int id)
     }
 }
 
-/*
-Nodo buscarTareaPorID(Nodo **lista, int idABuscar)
+/* CONTROLAR ESTA FUNCION */
+Nodo buscarTareaPorID(Nodo **listaPend, Nodo **listaComp, int idABuscar)
 {
+    Nodo *copia = *listaPend;
+    while (copia != NULL && copia->datos.tareaID != idABuscar)
+    {
+        copia = copia->siguiente;
+    }
+    
+    if (copia != NULL)              // si encuentra el nodo lo imprime
+    {
+        printf("/---- Tarea Pendiente ----/");
+        printf("\nTarea #%d\n", copia->datos.tareaID);
+        printf("%s\n", copia->datos.descripcion);
+        printf("Duracion: %dhs\n", copia->datos.duracion);
+    }
+    else                            // si llega al final de la lista no encuentra la tarea
+    {
+        copia = *listaComp;   // aqui habia un error si ponias un * en copia...
+        while (copia != NULL && copia->datos.tareaID != idABuscar)
+        {
+            copia = copia->siguiente;
+        }
+
+        if (copia != NULL)
+        {
+        printf("/---- Tarea Completada ----/");
+        printf("\nTarea #%d\n", copia->datos.tareaID);
+        printf("%s\n", copia->datos.descripcion);
+        printf("Duracion: %dhs\n", copia->datos.duracion);
+        }
+        else
+        {
+            printf("No se encontró una tarea con ese ID.");
+        }
+    }
 }
 
+/*
 Nodo buscarTareaPorPalabra()
 {
 }
