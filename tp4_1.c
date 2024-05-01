@@ -28,16 +28,17 @@ Nodo *quitarNodo(Nodo **Cabeza);
 void agregarTareaPendiente(Nodo **Cabeza, int id);     // esto es insertarNodo, puntero doble a la lista y simple al nodo
 void mostrarUnaSolaLista(Nodo *lista);
 void agregarTareaCompletada(Nodo **listaPend, Nodo **listaComp, int id);
-Nodo buscarTareaPorID(Nodo **listaPend, Nodo **listaComp, int idABuscar);
-Nodo buscarTareaPorPalabra();
+void buscarTareaPorID(Nodo **listaPend, Nodo **listaComp, int idABuscar);
+void buscarTareaPorPalabra(Nodo **listaPend, Nodo **listaComp, char palabra[]);  // acordate que en C, string es un arreglo de char
+void liberarMemorias(Nodo **lista);
 
 
 
 int main(int argv, char *argc[])
 {
     /* Variables */
-    int auxID = 999, opcion, completadoID;
-    char continuar = 'S', otraTareaNueva = 'N', completarOtraTarea = 'S', opcionBusqueda;
+    int auxID = 999, opcion, completadoID, IDBuscado;
+    char continuar = 'S', otraTareaNueva = 'N', completarOtraTarea = 'S', opcionBusqueda, palabraBuscada[20];
 
     // creas la lista de tareas pendientes, 'St' por Start
     Nodo *StPendientes;
@@ -75,7 +76,7 @@ int main(int argv, char *argc[])
                 mostrarUnaSolaLista(StPendientes);
                 do
                 {
-                    printf("Ingrese el ID de la tarea completda: ");
+                    printf("\nIngrese el ID de la tarea completada: ");
                     fflush(stdin);
                     scanf("%d", &completadoID);
 
@@ -94,6 +95,7 @@ int main(int argv, char *argc[])
 
             case 3:         // opcion para mostrar las listas
 
+                printf("\n/---- Tareas Pendientes ----/");
                 if (StPendientes == NULL)
                 {
                     printf("\nAun no se registraron tareas nuevas.\n");
@@ -103,6 +105,7 @@ int main(int argv, char *argc[])
                     mostrarUnaSolaLista(StPendientes);    
                 }
 
+                printf("\n/---- Tareas Completadas ----/");
                 if (StCompletadas == NULL)
                 {
                     printf("\nAun no hay ninguna tarea completada.\n");
@@ -118,34 +121,49 @@ int main(int argv, char *argc[])
 
                 do
                 {
-                    printf("Quiere buscar por ID o por palabra? (I/P)");
+                    printf("\nQuiere buscar por ID o por palabra? (I/P) ");
                     fflush(stdin);
                     scanf("%c", &opcionBusqueda);
-                } while (opcionBusqueda != 'I' && opcionBusqueda != 'P');
+                } while (opcionBusqueda != 'I' && opcionBusqueda != 'P');       // acá tenes una forma mas obvia de acegurar que ingresen letras
 
                 if (opcionBusqueda == 'I')
                 {
-                    /* code */
+                    printf("\nIngrese el ID de que busca: ");
+                    fflush(stdin);
+                    while ( (scanf("%d", &IDBuscado) == 0) || IDBuscado <= 999)     // esta es otra forma: si no ingresas lo que pide scanf devuelve 0
+                    {
+                        fflush(stdin);
+                        printf("Utilice valores mayores a 999.   ");                // o podras usar algo como isalnum de ctype.h
+                    }
+                    buscarTareaPorID(&StPendientes, &StCompletadas, IDBuscado);
                 }
                 else
                 {
-                    /* code */
+                    printf("\nIngrese una palabra para iniciar la busqueda: ");
+                    fflush(stdin);
+                    gets(palabraBuscada);
+                    buscarTareaPorPalabra(&StPendientes, &StCompletadas, palabraBuscada);
                 }
 
                 break;
-
         }
 
         do
         {
-            printf("Desea continuar con otra opcion? (S/N): ");
+            printf("\nDesea continuar con otra opcion? (S/N): ");
             fflush(stdin);
             scanf("%c", &continuar);
             continuar = toupper(continuar);
         } while (continuar != 'S' && continuar != 'N');
     }
 
-    /* supongo que cuando termines en este caso tendrias que borrar ambas listas */
+    /* liberas la memoria de las listas */
+    liberarMemorias(&StPendientes);
+    liberarMemorias(&StCompletadas);
+
+    /* liberas las cabeceras */
+    free(StPendientes);
+    free(StCompletadas);
 
     printf("\nHasta la proxima!\n");
     return 0;
@@ -244,29 +262,30 @@ void agregarTareaCompletada(Nodo **listaPend, Nodo **listaComp, int id)
     }
     else
     {
-        printf("El ID ingresado no corresponde a una tarea en la lista de pendientes.");
+        printf("\nEl ID ingresado no corresponde a una tarea en la lista de pendientes.\n");
     }
 }
 
 /* CONTROLAR ESTA FUNCION */
-Nodo buscarTareaPorID(Nodo **listaPend, Nodo **listaComp, int idABuscar)
+void buscarTareaPorID(Nodo **listaPend, Nodo **listaComp, int idABuscar)
 {
     Nodo *copia = *listaPend;
     while (copia != NULL && copia->datos.tareaID != idABuscar)
     {
         copia = copia->siguiente;
     }
-    
+
     if (copia != NULL)              // si encuentra el nodo lo imprime
     {
-        printf("/---- Tarea Pendiente ----/");
+        printf("\n/---- Tarea Pendiente ----/");
         printf("\nTarea #%d\n", copia->datos.tareaID);
         printf("%s\n", copia->datos.descripcion);
         printf("Duracion: %dhs\n", copia->datos.duracion);
     }
+
     else                            // si llega al final de la lista no encuentra la tarea
     {
-        copia = *listaComp;   // aqui habia un error si ponias un * en copia...
+        copia = *listaComp;         // aqui habia un error si ponias un * en copia, ya está declarado como puntero
         while (copia != NULL && copia->datos.tareaID != idABuscar)
         {
             copia = copia->siguiente;
@@ -274,10 +293,10 @@ Nodo buscarTareaPorID(Nodo **listaPend, Nodo **listaComp, int idABuscar)
 
         if (copia != NULL)
         {
-        printf("/---- Tarea Completada ----/");
-        printf("\nTarea #%d\n", copia->datos.tareaID);
-        printf("%s\n", copia->datos.descripcion);
-        printf("Duracion: %dhs\n", copia->datos.duracion);
+            printf("/---- Tarea Completada ----/");
+            printf("\nTarea #%d\n", copia->datos.tareaID);
+            printf("%s\n", copia->datos.descripcion);
+            printf("Duracion: %dhs\n", copia->datos.duracion);
         }
         else
         {
@@ -286,8 +305,65 @@ Nodo buscarTareaPorID(Nodo **listaPend, Nodo **listaComp, int idABuscar)
     }
 }
 
-/*
-Nodo buscarTareaPorPalabra()
+
+void buscarTareaPorPalabra(Nodo **listaPend, Nodo **listaComp, char palabra[])
 {
+    int contador = 0;
+    char *bufferTemp;
+    Nodo *copia = *listaPend;
+
+    printf("\n/---- Tareas Pendientes ----/\n");
+    while (copia != NULL)
+    {
+        // strstr esta funcion devuelve un puntero, si encuentra la palabra
+        // bufferTemp no va a estar vacio, si no la encuentra queda en NULL
+        bufferTemp = strstr(copia->datos.descripcion, palabra);
+        if (bufferTemp != NULL)
+        {
+            printf("\nTarea #%d\n", copia->datos.tareaID);
+            printf("%s\n", copia->datos.descripcion);
+            printf("Duracion: %dhs\n", copia->datos.duracion);
+            contador += 1;
+        }
+        copia = copia->siguiente;
+    }
+    if (contador == 0)
+    {
+        printf("\nNo hay coincidencias entre las tareas pendientes.\n");
+    }
+
+    printf("\n/---- Tareas Completadas ----/\n");
+    contador = 0;
+    copia = *listaComp;
+    while (copia != NULL)
+    {
+        bufferTemp = strstr(copia->datos.descripcion, palabra);
+        if (bufferTemp != NULL)
+        {
+            printf("\nID: #%d\n", copia->datos.tareaID);
+            printf("Descripcion: %s\n", copia->datos.descripcion);
+            printf("Durachion %dhs\n", copia->datos.duracion);
+            contador += 1;
+        }
+        copia = copia->siguiente;
+    }
+    if (contador == 0)
+    {
+        printf("\nNo hay coincidencias en la lista de tareas completadas.\n");
+    }
 }
-*/
+
+
+void liberarMemorias(Nodo **lista)
+{
+    // esta funcion la haces igual que si borrars un nodo
+    // para pasarlo a otra lista solo que bue... no lo pasas a ningun lado
+    Nodo *temp;
+    while (*lista != NULL)
+    {
+        temp = *lista;                      // guardas el nodo
+        *lista = (*lista)->siguiente;       // asignas el sigueinte nodo a la cabecera
+        free(temp->datos.descripcion);      // asignaste memoria para la descripcion, se libera tambien
+        free(temp);                         // al final liberas el nodo
+    }
+}
