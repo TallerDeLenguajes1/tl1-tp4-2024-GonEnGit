@@ -22,9 +22,7 @@ typedef struct Nodo     // C te rompe si no tenes bien los nombre de las estruct
 
 /* Firmas de funciones */
 int presentarMenu();
-int buscarNodo(Nodo **Cabeza, int IDBuscado);
 Nodo *CrearListaVacia();
-Nodo *quitarNodo(Nodo **Cabeza);
 void agregarTareaPendiente(Nodo **Cabeza, int id);     // esto es insertarNodo, puntero doble a la lista y simple al nodo
 void mostrarUnaSolaLista(Nodo *lista);
 void agregarTareaCompletada(Nodo **listaPend, Nodo **listaComp, int id);
@@ -52,13 +50,11 @@ int main(int argv, char *argc[])
         opcion = presentarMenu();
         switch (opcion)
         {
-            case 1:         // opcion para cargar tareas nuevas
-
+            case 1:             // opcion para cargar tareas nuevas
                 do
                 {
                     auxID += 1;
                     agregarTareaPendiente(&StPendientes, auxID);
-
                     do
                     {
                         printf("\nQuiere agregar otra tarea? (S/N): ");
@@ -66,22 +62,17 @@ int main(int argv, char *argc[])
                         scanf("%c", &otraTareaNueva);
                         otraTareaNueva = toupper(otraTareaNueva);
                     } while (otraTareaNueva != 'N' && otraTareaNueva != 'S');
-
                 } while (otraTareaNueva == 'S');
-
                 break;
 
             case 2:         // opcion para pasar una tarea a la lista de completadas
-
                 mostrarUnaSolaLista(StPendientes);
                 do
                 {
                     printf("\nIngrese el ID de la tarea completada: ");
                     fflush(stdin);
                     scanf("%d", &completadoID);
-
                     agregarTareaCompletada(&StPendientes, &StCompletadas, completadoID);
-
                     do
                     {
                         printf("\nQuiere pasar otra tarea a la lista de completadas? (S/N): ");
@@ -90,11 +81,9 @@ int main(int argv, char *argc[])
                         completarOtraTarea = toupper(completarOtraTarea);
                     } while (completarOtraTarea != 'N' && completarOtraTarea != 'S');
                 } while (completarOtraTarea == 'S');
-
                 break;
 
             case 3:         // opcion para mostrar las listas
-
                 printf("\n/---- Tareas Pendientes ----/");
                 if (StPendientes == NULL)
                 {
@@ -104,7 +93,6 @@ int main(int argv, char *argc[])
                 {
                     mostrarUnaSolaLista(StPendientes);    
                 }
-
                 printf("\n/---- Tareas Completadas ----/");
                 if (StCompletadas == NULL)
                 {
@@ -114,18 +102,15 @@ int main(int argv, char *argc[])
                 {
                     mostrarUnaSolaLista(StCompletadas);
                 }
-
                 break;
 
             case 4:         // opcion para buscar una tarea
-
                 do
                 {
                     printf("\nQuiere buscar por ID o por palabra? (I/P) ");
                     fflush(stdin);
                     scanf("%c", &opcionBusqueda);
                 } while (opcionBusqueda != 'I' && opcionBusqueda != 'P');       // acá tenes una forma mas obvia de acegurar que ingresen letras
-
                 if (opcionBusqueda == 'I')
                 {
                     printf("\nIngrese el ID de que busca: ");
@@ -144,10 +129,8 @@ int main(int argv, char *argc[])
                     gets(palabraBuscada);
                     buscarTareaPorPalabra(&StPendientes, &StCompletadas, palabraBuscada);
                 }
-
                 break;
         }
-
         do
         {
             printf("\nDesea continuar con otra opcion? (S/N): ");
